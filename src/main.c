@@ -10,6 +10,7 @@
 game_t *init_game(void)
 {
     game_t *game = malloc(sizeof(game_t));
+    game->player = malloc(sizeof(player_t));
     game->running = true;
     game->error = 0;
     return game;
@@ -18,6 +19,7 @@ game_t *init_game(void)
 void game_loop(game_t *game)
 {
     int ch = getch();
+    erase();
     if (ch == 'q')
         game->running = false;
     if (ch == KEY_UP)
@@ -30,24 +32,28 @@ void game_loop(game_t *game)
         printw("LEFT\n");
 }
 
+void display_map(game_t *game)
+{
+    for (int i = 0; game->map[i]; i++)
+        printw("%s\n", game->map[i]);
+}
+
 int main(int ac, char **av)
 {
     game_t *game = init_game();
     read_map(av[1], game);
-    for (int i = 0; game->map[i]; i++)
-        my_printf("%s\n", game->map[i]);
+    initscr();
+    cbreak();
+    noecho();
+    intrflush(stdscr, FALSE);
+    keypad(stdscr, TRUE);
+    noecho();
+    while (game->running) {
+        refresh();
+        display_map(game);
+        game_loop(game);
+    }
+    endwin();
     return 0;
 }
 
-
-    // initscr();
-    // cbreak();
-    // noecho();
-    // intrflush(stdscr, FALSE);
-    // keypad(stdscr, TRUE);
-    // noecho();
-    // while (game->running) {
-    //     refresh();
-    //     game_loop(game);
-    // }
-    // endwin();

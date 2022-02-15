@@ -25,10 +25,16 @@
 
 //:::::::::: Structure :::::::::::
 
+typedef struct player_s {
+    int x;
+    int y;
+} player_t;
+
 typedef struct game_s {
+    char **map;
     bool running;
     int error;
-    char **map;
+    player_t *player;
 } game_t;
 
 //:::::::::: Fonction lib ::::::::::

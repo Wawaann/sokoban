@@ -9,11 +9,13 @@
 
 char **mem_alloc_2d_array(int nb_rows, int nb_cols)
 {
-    char **arr = malloc(sizeof(char *) * nb_rows);
+    char **arr = malloc((sizeof(char *) * nb_rows) + 9);
+    int i = 0;
 
-    for (int i = 0; i < nb_rows; i++) {
+    for (; i < nb_rows; i++) {
         arr[i] = malloc(nb_cols + 1);
     }
+    arr[i] = NULL;
     return arr;
 }
 
@@ -22,8 +24,6 @@ char **load_2d_arr_from_file(char *map, int nb_rows, int nb_cols)
     int c = 0;
     char **arr = mem_alloc_2d_array(nb_rows, nb_cols);
 
-    for (; map[c] != '\n'; c++);
-    c++;
     for (int i = 0; i < nb_rows; i++) {
         for (int j = 0; j <= nb_cols; j++) {
             if (map[c] == '\n')

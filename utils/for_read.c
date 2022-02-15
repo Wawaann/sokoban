@@ -36,8 +36,6 @@ int get_row(char const *map)
     for (int i = 0; map[i]; i++) {
         if (map[i] == '\n')
             res++;
-
-            
     }
     return res;
 }
