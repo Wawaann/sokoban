@@ -31,9 +31,13 @@ typedef struct player_s {
 } player_t;
 
 typedef struct game_s {
+    char *buffer;
     char **map;
     bool running;
-    int error;
+    int exit;
+    int nb_cols;
+    int nb_rows;
+    char *exit_mes;
     player_t *player;
 } game_t;
 
@@ -82,5 +86,10 @@ int get_col(char const *map);
 char **mem_alloc_2d_array(int nb_rows, int nb_cols);
 char **load_2d_arr_from_file(char *map, int nb_rows, int nb_cols);
 void read_map(char *path, game_t *game);
+void check_map(game_t *game);
+void check_box(game_t *game, char *buffer);
+void check_line(game_t *game, int x);
+void check_rest(game_t *game);
+bool check_char(char ch);
 
 #endif

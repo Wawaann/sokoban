@@ -12,21 +12,20 @@ int fs_open_file(char const *filepath, game_t *game)
     int fd = open(filepath, O_RDONLY);
     if (fd == -1) {
         my_putstr("Fail to open the file.\n");
-        game->error = 84;
+        game->exit = 84;
     }
     return fd;
 }
 
-char *load_file_in_mem(char const *filepath, game_t *game)
+char **mem_alloc_2d_array(int nb_rows, int nb_cols)
 {
-    int fd = fs_open_file(filepath, game);
-    struct stat st;
-    stat(filepath, &st);
-    int size = st.st_size + 1;
-    char *buf = malloc(size);
-    read(fd, buf, size);
-    buf[size - 1] = '\0';
-    return buf;
+    char **arr = malloc(sizeof(char *) * (nb_rows + 1));
+
+    for (int i = 0; i < nb_rows; i++) {
+        arr[i] = malloc(nb_cols + 1);
+    }
+    arr[nb_rows] = NULL;
+    return arr;
 }
 
 int get_row(char const *map)

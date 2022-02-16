@@ -7,16 +7,16 @@
 
 #include "../include/my.h"
 
-char **mem_alloc_2d_array(int nb_rows, int nb_cols)
+char *load_file_in_mem(char const *filepath, game_t *game)
 {
-    char **arr = malloc((sizeof(char *) * nb_rows) + 9);
-    int i = 0;
-
-    for (; i < nb_rows; i++) {
-        arr[i] = malloc(nb_cols + 1);
-    }
-    arr[i] = NULL;
-    return arr;
+    int fd = fs_open_file(filepath, game);
+    struct stat st;
+    stat(filepath, &st);
+    int size = st.st_size + 1;
+    char *buf = malloc(size);
+    read(fd, buf, size);
+    buf[size - 1] = '\0';
+    return buf;
 }
 
 char **load_2d_arr_from_file(char *map, int nb_rows, int nb_cols)
@@ -38,8 +38,8 @@ char **load_2d_arr_from_file(char *map, int nb_rows, int nb_cols)
 
 void read_map(char *path, game_t *game)
 {
-    char *buffer = load_file_in_mem(path, game);
-    int cols = get_col(buffer);
-    int rows = get_row(buffer);
-    game->map = load_2d_arr_from_file(buffer, rows, cols);
+    game->buffer = load_file_in_mem(path, game);
+    game->nb_cols = get_col(game->buffer);
+    game->nb_rows = get_row(game->buffer);
+    game->map = load_2d_arr_from_file(game->buffer, game->nb_rows, game->nb_cols);
 }

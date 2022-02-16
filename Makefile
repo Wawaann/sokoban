@@ -6,11 +6,13 @@
 ##
 
 
-SRC		=	src/main.c 						\
+SRC		=	src/check_map.c			\
+			src/read_map.c 			\
+			src/sokoban.c			\
 
 UTILS	=	lib/my/lib_printf/src/utils.c 	\
 			utils/for_read.c 				\
-			utils/read_map.c 				\
+			utils/for_check.c 				\
 
 OBJ     =   $(SRC:.c=.o)$(UTILS:.c=.o)
 
