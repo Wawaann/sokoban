@@ -2,11 +2,12 @@
 ## EPITECH PROJECT, 2021
 ## Makefile
 ## File description:
-## Makefile
+## Make des files
 ##
 
 
 SRC		=	src/check_map.c			\
+			src/player.c 			\
 			src/read_map.c 			\
 			src/sokoban.c			\
 

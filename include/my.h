@@ -78,18 +78,25 @@ void my_swap(int *a, int *b);
 //:::::::::: Fonction lib my_printf ::::::::::
 void my_printf(char *s, ...);
 
-//:::::::::: Utils ::::::::::
-int fs_open_file(char const *filepath, game_t *game);
+// :::::::::: SRC ::::::::::
 char *load_file_in_mem(char const *filepath, game_t *game);
-int get_row(char const *map);
-int get_col(char const *map);
-char **mem_alloc_2d_array(int nb_rows, int nb_cols);
 char **load_2d_arr_from_file(char *map, int nb_rows, int nb_cols);
 void read_map(char *path, game_t *game);
 void check_map(game_t *game);
+void get_player_coord(game_t *game);
+void move_player(player_t *player, int ch);
+int get_x(game_t *game);
+int get_y(game_t *game);
+
+//:::::::::: Utils ::::::::::
+int fs_open_file(char const *filepath, game_t *game);
+int get_row(char const *map);
+int get_col(char const *map);
+char **mem_alloc_2d_array(int nb_rows, int nb_cols);
 void check_box(game_t *game, char *buffer);
 void check_line(game_t *game, int x);
 void check_rest(game_t *game);
 bool check_char(char ch);
+
 
 #endif

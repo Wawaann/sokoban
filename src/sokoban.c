@@ -24,19 +24,22 @@ void game_loop(game_t *game)
     erase();
     if (ch == 'q')
         game->running = false;
-    if (ch == KEY_UP)
-        printw("UP\n");
-    if (ch == KEY_DOWN)
-        printw("DOWN\n");
-    if (ch == KEY_RIGHT)
-        printw("RIGHT\n");
-    if (ch == KEY_LEFT)
-        printw("LEFT\n");
+    move_player(game->player, ch);
+}
+
+void update_map(game_t *game)
+{
+    int x = get_x(game);
+    int y = get_y(game);
+    game->map[y][x] = ' ';
+    game->map[game->player->y][game->player->x] = 'P';
 }
 
 void display_map(game_t *game)
 {
     refresh();
+    printw("x : %d; y : %d\n", game->player->x, game->player->y);
+    update_map(game);
     for (int i = 0; game->map[i]; i++)
         printw("%s\n", game->map[i]);
 }
@@ -60,6 +63,8 @@ int main(int ac, char **av)
     game_t *game = init_game();
     read_map(av[1], game);
     check_map(game);
+    get_player_coord(game);
+    display_map(game);
     if (game->exit == 84) {
         my_printf("%s\n", game->exit_mes);
         return game->exit;
