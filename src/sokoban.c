@@ -24,7 +24,7 @@ void game_loop(game_t *game)
     erase();
     if (ch == 'q')
         game->running = false;
-    move_player(game->player, ch);
+    move_player(game, ch);
 }
 
 void update_map(game_t *game)
@@ -61,6 +61,10 @@ void launch_game(game_t *game)
 int main(int ac, char **av)
 {
     game_t *game = init_game();
+    if (ac != 2) {
+        my_printf("Wrong arguments\n");
+        return 84;
+    }
     read_map(av[1], game);
     check_map(game);
     get_player_coord(game);

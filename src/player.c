@@ -44,15 +44,18 @@ void get_player_coord(game_t *game)
 }
 
 bool can_move()
+{
+    return true;
+}
 
-void move_player(player_t *player, int ch)
+void move_player(game_t *game, int ch)
 {
     if (ch == KEY_UP)
-        player->y--;
+        game->player->y--;
     if (ch == KEY_DOWN)
-        player->y++;
+        game->player->y++;
     if (ch == KEY_RIGHT)
-        player->x++;
+        game->player->x++;
     if (ch == KEY_LEFT)
-        player->x--;
+        game->player->x--;
 }

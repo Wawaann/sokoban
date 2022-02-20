@@ -84,7 +84,7 @@ char **load_2d_arr_from_file(char *map, int nb_rows, int nb_cols);
 void read_map(char *path, game_t *game);
 void check_map(game_t *game);
 void get_player_coord(game_t *game);
-void move_player(player_t *player, int ch);
+void move_player(game_t *game, int ch);
 int get_x(game_t *game);
 int get_y(game_t *game);
 
