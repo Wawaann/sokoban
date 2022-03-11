@@ -36,10 +36,20 @@ char **load_2d_arr_from_file(char *map, int nb_rows, int nb_cols)
     return arr;
 }
 
+void cp_map(game_t *game)
+{
+    for (int i = 0; i < game->nb_rows; i++) {
+        game->map_cpy[i] = my_strcpy(game->map_cpy[i], game->map[i]);
+    }
+}
+
 void read_map(char *path, game_t *game)
 {
     game->buffer = load_file_in_mem(path, game);
-    game->nb_cols = get_col(game->buffer);
-    game->nb_rows = get_row(game->buffer);
-    game->map = load_2d_arr_from_file(game->buffer, game->nb_rows, game->nb_cols);
+    int cols = get_col(game->buffer);
+    int rows = get_row(game->buffer);
+    game->nb_cols = cols;
+    game->nb_rows = rows;
+    game->map_cpy = mem_alloc_2d_array(game->nb_rows, game->nb_cols);
+    game->map = load_2d_arr_from_file(game->buffer, rows, cols);
 }

@@ -53,5 +53,6 @@ int get_col(char const *map)
     }
     buf[c] = '\0';
     result = my_strlen(buf);
+    free(buf);
     return result;
 }

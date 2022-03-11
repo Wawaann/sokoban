@@ -7,41 +7,31 @@
 
 #include "../include/my.h"
 
-game_t *init_game(void)
-{
-    game_t *game = malloc(sizeof(game_t));
-    game->player = malloc(sizeof(player_t));
-    game->running = true;
-    game->exit = 0;
-    game->nb_cols = 0;
-    game->nb_rows = 0;
-    return game;
-}
-
-void game_loop(game_t *game)
-{
-    int ch = getch();
-    erase();
-    if (ch == 'q')
-        game->running = false;
-    move_player(game, ch);
-}
-
 void update_map(game_t *game)
 {
-    int x = get_x(game);
-    int y = get_y(game);
-    game->map[y][x] = ' ';
-    game->map[game->player->y][game->player->x] = 'P';
+    node_t *tmp = game->box->begin;
+    for (; tmp; tmp = tmp->next)
+        game->map_cpy[tmp->y][tmp->x] = 'X';
+    game->map_cpy[game->player->y][game->player->x] = 'P';
 }
 
 void display_map(game_t *game)
 {
+    int ymax, xmax, ybeg, xbeg;
+    int x, y;
+    getmaxyx(stdscr, ymax, xmax);
+    getbegyx(stdscr, ybeg, xbeg);
     refresh();
-    printw("x : %d; y : %d\n", game->player->x, game->player->y);
     update_map(game);
-    for (int i = 0; game->map[i]; i++)
-        printw("%s\n", game->map[i]);
+    if (xmax < my_strlen(game->map[0]) || ymax < my_arrlen(game->map))
+            printw("Elarge the terminale pls\n");
+    else {
+        for (int i = 0; game->map[i]; i++, ybeg++) {
+                x = (xbeg + xmax / 2) - game->nb_cols / 2;
+                y = (ybeg + ymax / 2) - game->nb_rows / 2;
+                mvprintw(y, x, "%s\n", game->map_cpy[i]);
+        }
+    }
 }
 
 void launch_game(game_t *game)
@@ -52,8 +42,10 @@ void launch_game(game_t *game)
     keypad(stdscr, TRUE);
     noecho();
     while (game->running) {
+        cp_map(game);
         display_map(game);
         game_loop(game);
+        end(game);
     }
     endwin();
 }
@@ -64,15 +56,19 @@ int main(int ac, char **av)
     if (ac != 2) {
         my_printf("Wrong arguments\n");
         return 84;
+    } else if (ac == 2 && av[1][0] == '-' && av[1][1] == 'h') {
+        usage();
+        return 0;
+    } else {
+        read_map(av[1], game);
+        check_map(game);
+        get_player_coord(game);
+        get_box_coord(game);
+        if (game->exit == 84)
+            my_printf("%s\n", game->exit_mes);
+        else
+            launch_game(game);
     }
-    read_map(av[1], game);
-    check_map(game);
-    get_player_coord(game);
-    display_map(game);
-    if (game->exit == 84) {
-        my_printf("%s\n", game->exit_mes);
-        return game->exit;
-    }
-    launch_game(game);
+    free_mem(game);
     return game->exit;
 }

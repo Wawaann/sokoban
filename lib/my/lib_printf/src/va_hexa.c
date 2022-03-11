@@ -43,4 +43,3 @@ void va_hexa_maj(va_list *list)
 {
     my_put_hexa(va_arg(*list, int), 'X');
 }
-

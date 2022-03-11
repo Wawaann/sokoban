@@ -5,9 +5,6 @@
 ** Functions prototypes of my lib.
 */
 
-#ifndef MY
-    #define MY
-
 #include <stdarg.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -15,6 +12,9 @@
 #include <stdbool.h>
 #include <sys/types.h>
 #include <dirent.h>
+
+#ifndef MY
+    #define MY
 
 //::::::::::::::::Basic lib functions::::::::::::::::
 void my_putchar(char c);

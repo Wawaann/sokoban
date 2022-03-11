@@ -18,7 +18,7 @@ int my_getnbr(char const *str)
     int neg = 1, i = 0;
 
     for (; (str[i] < '0' || str[i] > '9') && str[i] != '\0'; i++) {
-        if  (str[i] == '-' && my_char_isnum(str[i + 1]) == 1)
+        if (str[i] == '-' && my_char_isnum(str[i + 1]) == 1)
             neg = -1;
     }
     for (; str[i] != 0 && str[i] >= '0' && str[i] <= '9'; i++) {

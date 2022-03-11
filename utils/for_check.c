@@ -20,12 +20,10 @@ void check_box(game_t *game, char *buffer)
             target++;
         if (buffer[i] == 'P')
             player++;
-    }
-    if (player != 1) {
+    } if (player != 1) {
         game->exit = 84;
         game->exit_mes = "Ereeror with the player";
-    }
-    if (box != target) {
+    } if (box != target) {
         game->exit = 84;
         game->exit_mes = "Wrong map";
     }
@@ -50,7 +48,6 @@ void check_rest(game_t *game)
         }
     }
 }
-
 
 bool check_char(char ch)
 {

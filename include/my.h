@@ -5,41 +5,10 @@
 ** Biblihotèque contenant tous les prototypes des fonctions
 */
 
-#include <ncurses.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <dirent.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <pwd.h>
-#include <grp.h>
-#include <time.h>
-#include <unistd.h>
+#include "struct.h"
 
 #ifndef MY
     #define MY
-
-//:::::::::: Structure :::::::::::
-
-typedef struct player_s {
-    int x;
-    int y;
-} player_t;
-
-typedef struct game_s {
-    char *buffer;
-    char **map;
-    bool running;
-    int exit;
-    int nb_cols;
-    int nb_rows;
-    char *exit_mes;
-    player_t *player;
-} game_t;
 
 //:::::::::: Fonction lib ::::::::::
 char my_putchar(char c);
@@ -79,6 +48,7 @@ void my_swap(int *a, int *b);
 void my_printf(char *s, ...);
 
 // :::::::::: SRC ::::::::::
+game_t *init_game(void);
 char *load_file_in_mem(char const *filepath, game_t *game);
 char **load_2d_arr_from_file(char *map, int nb_rows, int nb_cols);
 void read_map(char *path, game_t *game);
@@ -87,6 +57,8 @@ void get_player_coord(game_t *game);
 void move_player(game_t *game, int ch);
 int get_x(game_t *game);
 int get_y(game_t *game);
+box_t *init_box(void);
+void get_box_coord(game_t *game);
 
 //:::::::::: Utils ::::::::::
 int fs_open_file(char const *filepath, game_t *game);
@@ -97,6 +69,15 @@ void check_box(game_t *game, char *buffer);
 void check_line(game_t *game, int x);
 void check_rest(game_t *game);
 bool check_char(char ch);
-
+void display_box(game_t *game);
+void usage(void);
+int my_arrlen(char **arr);
+void free_mem(game_t *game);
+void cp_map(game_t *game);
+bool box_can_move(game_t *game, int x, int y, int move);
+void move_box(node_t *tmp, int x, int y, int move);
+bool end(game_t *game);
+void reset_game(game_t *game);
+void game_loop(game_t *game);
 
 #endif
