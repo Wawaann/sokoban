@@ -1,0 +1,6 @@
+sokoban
+.vscode
+.idea
+cmake-build-debug
+build/*
+build/CMakeFiles/
