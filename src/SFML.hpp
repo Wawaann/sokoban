@@ -14,7 +14,7 @@
 
     class SFML {
         public:
-            SFML() = default;
+            SFML();
             ~SFML() = default;
 
             void init(const std::map<char, std::string>& gameAssets);
@@ -26,6 +26,10 @@
             void clear();
 
             void display(Game &game);
+
+            int getWidth() const { return (int)_videoMode.width; }
+
+            int getHeight() const { return (int)_videoMode.height; }
 
         private:
             sf::RenderWindow            _window;

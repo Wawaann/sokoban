@@ -5,7 +5,7 @@ Game::Game(std::vector<std::string> levels)
     _levels = std::move(levels);
 }
 
-void Game::init()
+void Game::init(int width, int height)
 {
     loadMap(_levels[_levelIndex]);
     _gameAssets[' '] = "./assets/Ground/ground.png";
@@ -13,13 +13,18 @@ void Game::init()
     _gameAssets['P'] = "./assets/Player/player.png";
     _gameAssets['X'] = "./assets/Crate/crate.png";
     _gameAssets['O'] = "./assets/Goal/goal.png";
+    _windowWidth = width;
+    _windowHeight = height;
 }
 
 void Game::update()
 {
+    if (isGameOver()) {
+        std::cout << "GAME OVER !!!" << std::endl;
+        return;
+    }
     if (isLevelOver()) {
-        _levelIndex++;
-        resetLevel();
+        resetLevel(true);
     }
     for (auto &crate : _crates) {
         if (crate.onGoal)
@@ -45,7 +50,7 @@ void Game::update()
             _input = NOTHING;
             return;
         case (R) :
-            resetLevel();
+            resetLevel(false);
             _input = NOTHING;
             return;
         case (Z) :
@@ -59,6 +64,8 @@ void Game::update()
 
 void Game::loadMap(std::string &map)
 {
+    if (_levelIndex >= _levels.size())
+        return;
     int widthSizeTmp = 0;
     std::fstream file;
     file.open(map, std::ios::in);
@@ -124,13 +131,15 @@ void Game::loadMap(std::string &map)
             _mapWidth = widthSizeTmp;
         widthSizeTmp = 0;
     }
-    _mapWidth--;
-    std::cout << "Map Width: " << _mapWidth << ", Map height: " << _mapHeight << std::endl;
+    if (_mapWidth == 0 || _mapHeight == 0)
+        throw std::runtime_error("Map is empty");
+    if (_mapWidth > _windowWidth)
+        _mapWidth--;
+    if (_mapHeight > _windowHeight)
+        _mapHeight--;
+    std::cout << "MAP: " << _levelIndex << ", Map Width: " << _mapWidth << ", Map height: " << _mapHeight << std::endl;
+    std::cout << "Level size: " << _levels.size() - 1 << std::endl;
     file.close();
-
-    for (auto &goal : _goals) {
-        std::cout << "GOAL X: " << goal.x << ", GOAL Y: " << goal.y << std::endl;
-    }
 }
 
 void Game::createPlayer(int x, int y, char draw)
@@ -138,6 +147,7 @@ void Game::createPlayer(int x, int y, char draw)
     Coord coord;
     coord.x = x;
     coord.y = y;
+    _player.moveCount = 0;
     _player.draw = draw;
     _player.rect = {0, 0, 128, 128};
     _player.moves.push_back(coord);
@@ -154,6 +164,7 @@ void Game::createCrate(int x, int y, char draw, bool onGoal)
     Coord coord;
     coord.x = x;
     coord.y = y;
+    coord.moveCount = 0;
     Crate crate;
     crate.onGoal = onGoal;
     crate.draw = draw;
@@ -182,24 +193,27 @@ void Game::playerMove(int x, int y)
 
     for (auto &crate : _crates) {
         if (crate.moves.front().x == coord.x && crate.moves.front().y == coord.y) {
-            if (crateCanMove(crate, x, y))
-                moveCrate(crate, x, y);
+            if (crateCanMove(crate, x, y)) {
+                moveCrate(crate, x, y, _player.moveCount + 1);
+            }
             else
                 return;
+        }
     }
-    }
+    _player.moveCount++;
     _player.moves.push_front(coord);
+
 }
 
-void Game::moveCrate(Crate &crate, int x, int y)
+void Game::moveCrate(Crate &crate, int x, int y, int moveCount)
 {
     Coord coord;
     coord.x = crate.moves.front().x + x;
     coord.y = crate.moves.front().y + y;
+    coord.moveCount = moveCount;
 
     for (auto &goal : _goals) {
         if (goal.x == coord.x && goal.y == coord.y) {
-            std::cout << "Crate on goal !" << std::endl;
             crate.onGoal = true;
             break;
         }
@@ -229,8 +243,10 @@ bool Game::crateCanMove(Crate &crate, int x, int y)
     return true;
 }
 
-void Game::resetLevel()
+void Game::resetLevel(bool nextLevel)
 {
+    if (nextLevel && _levelIndex <= _levels.size())
+        _levelIndex++;
     _grounds.clear();
     _walls.clear();
     _goals.clear();
@@ -243,20 +259,35 @@ void Game::resetLevel()
 
 void Game::moveBack()
 {
-
+    if (_player.moves.size() > 1) {
+        _player.moves.pop_front();
+        for (auto &crate : _crates) {
+            if (crate.moves.size() > 1 && crate.moves.front().moveCount == _player.moveCount)
+                crate.moves.pop_front();
+        }
+        _player.moveCount--;
+    }
 }
 
 bool Game::isLevelOver()
 {
-    int size = _crates.size();
+    int size = (int)_crates.size();
     int i = 0;
 
     for (auto &crate : _crates) {
         if (!crate.onGoal) {
-            std::cout << "Crate " << size - i << " is not on goal" << std::endl;
             return false;
         }
         i++;
     }
     return true;
+}
+
+bool Game::isGameOver()
+{
+    if (_levelIndex == _levels.size()) {
+        _isOver = true;
+        return true;
+    }
+    return false;
 }

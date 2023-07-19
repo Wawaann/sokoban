@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
     std::unique_ptr<SFML> sfml = std::make_unique<SFML>();
     std::unique_ptr<Game> game = std::make_unique<Game>(getFilePaths("./map"));
 
-    game->init();
+    game->init(sfml->getWidth(), sfml->getHeight());
     sfml->init(game->getGameAssets());
 
     while (game->getState()) {

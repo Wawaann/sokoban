@@ -28,9 +28,11 @@
     typedef struct {
         int x;
         int y;
+        int moveCount;
     } Coord;
 
     typedef struct {
+        int moveCount;
         char draw;
         Rect rect;
         std::list<Coord> moves;
@@ -65,7 +67,7 @@
             explicit Game(std::vector<std::string> levels);
             ~Game() = default;
 
-            void init();
+            void init(int width, int height);
 
             void update();
 
@@ -77,19 +79,23 @@
 
             void playerMove(int x, int y);
 
-            void moveCrate(Crate &crate, int x, int y);
+            void moveCrate(Crate &crate, int x, int y, int moveCount);
 
             bool crateCanMove(Crate &crate, int x, int y);
 
-            void resetLevel();
+            void resetLevel(bool nextLevel);
 
             void moveBack();
 
             bool isLevelOver();
 
+            bool isGameOver();
+
             bool getState() const { return _isRunning; }
 
             void setState(bool state) { _isRunning = state; }
+
+            bool getIsOver() { return _isOver; }
 
             std::map<char, std::string> getGameAssets() { return _gameAssets; }
 
@@ -118,12 +124,15 @@
             std::vector<Drawable>       _goals;
             std::vector<std::string>    _levels;
             bool                        _isRunning = true;
+            bool                        _isOver = false;
             Player                      _player;
             std::vector<Crate>          _crates;
             Input                       _input = NOTHING;
-            int                         _levelIndex = 1;
+            int                         _levelIndex = 0;
             int                         _mapWidth = 0;
             int                         _mapHeight = 0;
+            int                         _windowWidth = 0;
+            int                         _windowHeight = 0;
     };
 
 #endif // GAME_H

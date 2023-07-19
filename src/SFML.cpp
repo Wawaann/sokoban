@@ -1,13 +1,16 @@
 #include "SFML.hpp"
 
-void SFML::init(const std::map<char, std::string> &gameAssets)
+SFML::SFML()
 {
     _videoMode = sf::VideoMode::getDesktopMode();
-    _window.create(sf::VideoMode(_videoMode.width, _videoMode.height), "Zappy", sf::Style::Close);
+    _window.create(sf::VideoMode(_videoMode.width, _videoMode.height), "Sokoban", sf::Style::Close);
     _window.setFramerateLimit(60);
     _window.setVerticalSyncEnabled(true);
     _window.setPosition(sf::Vector2i(0, 0));
+}
 
+void SFML::init(const std::map<char, std::string> &gameAssets)
+{
     for (auto &asset : gameAssets) {
         sf::Texture texture;
         texture.loadFromFile(asset.second);
@@ -26,20 +29,22 @@ void SFML::getEvent(Game &game)
             _window.close();
             game.setState(false);
         }
-        if (_event.type == sf::Event::KeyReleased && _event.key.code == sf::Keyboard::Left)
-            game.setInput(LEFT);
-        else if (_event.type == sf::Event::KeyReleased && _event.key.code == sf::Keyboard::Right)
-            game.setInput(RIGHT);
-        else if (_event.type == sf::Event::KeyReleased && _event.key.code == sf::Keyboard::Up)
-            game.setInput(UP);
-        else if (_event.type == sf::Event::KeyReleased && _event.key.code == sf::Keyboard::Down)
-            game.setInput(DOWN);
-        else if (_event.type == sf::Event::KeyReleased && _event.key.code == sf::Keyboard::R)
-            game.setInput(R);
-        else if (_event.type == sf::Event::KeyReleased && _event.key.code == sf::Keyboard::Z)
-            game.setInput(Z);
-        else
-            game.setInput(NOTHING);
+        if (!game.getIsOver()) {
+            if (_event.type == sf::Event::KeyReleased && _event.key.code == sf::Keyboard::Left)
+                game.setInput(LEFT);
+            else if (_event.type == sf::Event::KeyReleased && _event.key.code == sf::Keyboard::Right)
+                game.setInput(RIGHT);
+            else if (_event.type == sf::Event::KeyReleased && _event.key.code == sf::Keyboard::Up)
+                game.setInput(UP);
+            else if (_event.type == sf::Event::KeyReleased && _event.key.code == sf::Keyboard::Down)
+                game.setInput(DOWN);
+            else if (_event.type == sf::Event::KeyReleased && _event.key.code == sf::Keyboard::R)
+                game.setInput(R);
+            else if (_event.type == sf::Event::KeyReleased && _event.key.code == sf::Keyboard::Z)
+                game.setInput(Z);
+            else
+                game.setInput(NOTHING);
+        }
     }
 }
 
@@ -55,6 +60,14 @@ void SFML::clear()
 
 void SFML::display(Game &game)
 {
+    if (game.getIsOver()) {
+        sf::RectangleShape rect;
+        rect.setSize(sf::Vector2f((float)_videoMode.width, (float)_videoMode.height));
+        rect.setPosition(0, 0);
+        rect.setFillColor(sf::Color(200, 200, 200, 128));
+        _window.draw(rect);
+    }
+
     float scaleFactorX = 1;
     float scaleFactorY = 1;
     float posX = 64;
@@ -65,7 +78,6 @@ void SFML::display(Game &game)
     if (game.getMapWidth() * 128 > _videoMode.width) {
         scaleFactorX = (float)_videoMode.width / (float)(game.getMapWidth() * 128);
         spaceX = (float)_videoMode.width / (float)game.getMapWidth();
-        // faire les pos pour que ca commence des le debut de la window est non en décalé
         posX = (128 * scaleFactorX) / 2;
     }
     else {
@@ -80,6 +92,8 @@ void SFML::display(Game &game)
     else {
         posY = (float)(_videoMode.height - game.getMapHeight() * 128) / 2;
     }
+
+    //std::cout << "POS X: " << posX << " POS Y: " << posY << std::endl;
 
     for (auto &drawable : game.getGrounds()) {
         this->_sprites[drawable.draw].setOrigin(_sprites[drawable.draw].getLocalBounds().width / 2, _sprites[drawable.draw].getLocalBounds().height / 2);
