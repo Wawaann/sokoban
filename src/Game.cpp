@@ -8,6 +8,7 @@ Game::Game(std::vector<std::string> levels)
 void Game::init(int width, int height)
 {
     loadMap(_levels[_levelIndex]);
+    setMap();
     _gameAssets[' '] = "./assets/Ground/ground.png";
     _gameAssets['#'] = "./assets/Wall/wall.png";
     _gameAssets['P'] = "./assets/Player/player.png";
@@ -20,7 +21,6 @@ void Game::init(int width, int height)
 void Game::update()
 {
     if (isGameOver()) {
-        std::cout << "GAME OVER !!!" << std::endl;
         return;
     }
     if (isLevelOver()) {
@@ -66,7 +66,6 @@ void Game::loadMap(std::string &map)
 {
     if (_levelIndex >= _levels.size())
         return;
-    int widthSizeTmp = 0;
     std::fstream file;
     file.open(map, std::ios::in);
 
@@ -75,9 +74,21 @@ void Game::loadMap(std::string &map)
 
     std::string line;
 
-    for (int y = 0; !file.eof(); y++) {
-        _mapHeight++;
+    while (!file.eof()) {
         getline(file, line);
+        _currentMap.push_back(line);
+    }
+
+    file.close();
+}
+
+void Game::setMap()
+{
+    int widthSizeTmp = 0;
+    int y = 0;
+
+    for (auto &line : _currentMap) {
+        _mapHeight++;
 
         for (int x = 0; x < line.length(); x++) {
             widthSizeTmp++;
@@ -127,6 +138,7 @@ void Game::loadMap(std::string &map)
                 this->_grounds.push_back(drawable);
             }
         }
+        y++;
         if (widthSizeTmp > _mapWidth)
             _mapWidth = widthSizeTmp;
         widthSizeTmp = 0;
@@ -139,7 +151,6 @@ void Game::loadMap(std::string &map)
         _mapHeight--;
     std::cout << "MAP: " << _levelIndex << ", Map Width: " << _mapWidth << ", Map height: " << _mapHeight << std::endl;
     std::cout << "Level size: " << _levels.size() - 1 << std::endl;
-    file.close();
 }
 
 void Game::createPlayer(int x, int y, char draw)
@@ -245,8 +256,11 @@ bool Game::crateCanMove(Crate &crate, int x, int y)
 
 void Game::resetLevel(bool nextLevel)
 {
-    if (nextLevel && _levelIndex <= _levels.size())
+    if (nextLevel && _levelIndex <= _levels.size()) {
         _levelIndex++;
+        _currentMap.clear();
+        loadMap(_levels[_levelIndex]);
+    }
     _grounds.clear();
     _walls.clear();
     _goals.clear();
@@ -254,7 +268,7 @@ void Game::resetLevel(bool nextLevel)
     _player.moves.clear();
     _mapWidth = 0;
     _mapHeight = 0;
-    loadMap(_levels[_levelIndex]);
+    setMap();
 }
 
 void Game::moveBack()
@@ -262,8 +276,17 @@ void Game::moveBack()
     if (_player.moves.size() > 1) {
         _player.moves.pop_front();
         for (auto &crate : _crates) {
-            if (crate.moves.size() > 1 && crate.moves.front().moveCount == _player.moveCount)
+            if (crate.moves.size() > 1 && crate.moves.front().moveCount == _player.moveCount) {
                 crate.moves.pop_front();
+                for (auto &goal : _goals) {
+                    if (goal.x == crate.moves.front().x && goal.y == crate.moves.front().y) {
+                        crate.onGoal = true;
+                        break;
+                    }
+                    else
+                        crate.onGoal = false;
+                }
+            }
         }
         _player.moveCount--;
     }
@@ -280,6 +303,7 @@ bool Game::isLevelOver()
         }
         i++;
     }
+    _isLevelOver = true;
     return true;
 }
 

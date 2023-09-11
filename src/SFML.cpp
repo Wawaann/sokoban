@@ -64,7 +64,7 @@ void SFML::display(Game &game)
         sf::RectangleShape rect;
         rect.setSize(sf::Vector2f((float)_videoMode.width, (float)_videoMode.height));
         rect.setPosition(0, 0);
-        rect.setFillColor(sf::Color(200, 200, 200, 128));
+        rect.setFillColor(sf::Color(200, 200, 200, 200));
         _window.draw(rect);
     }
 

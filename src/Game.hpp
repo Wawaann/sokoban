@@ -73,6 +73,8 @@
 
             void loadMap(std::string& map);
 
+            void setMap();
+
             void createPlayer(int x, int y, char draw);
 
             void createCrate(int x, int y, char draw, bool onGoal);
@@ -96,6 +98,10 @@
             void setState(bool state) { _isRunning = state; }
 
             bool getIsOver() { return _isOver; }
+
+            bool getIsLevelOver() { return _isLevelOver; }
+
+            void setIsLevelOver(bool state) { _isLevelOver = state; }
 
             std::map<char, std::string> getGameAssets() { return _gameAssets; }
 
@@ -123,8 +129,10 @@
             std::vector<Drawable>       _walls;
             std::vector<Drawable>       _goals;
             std::vector<std::string>    _levels;
+            std::vector<std::string>    _currentMap;
             bool                        _isRunning = true;
             bool                        _isOver = false;
+            bool                        _isLevelOver = false;
             Player                      _player;
             std::vector<Crate>          _crates;
             Input                       _input = NOTHING;
