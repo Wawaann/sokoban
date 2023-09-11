@@ -1,3 +1,0 @@
-/home/ewan/Documents/perso/sokoban/build/CMakeFiles/sokoban.dir
-/home/ewan/Documents/perso/sokoban/build/CMakeFiles/edit_cache.dir
-/home/ewan/Documents/perso/sokoban/build/CMakeFiles/rebuild_cache.dir
